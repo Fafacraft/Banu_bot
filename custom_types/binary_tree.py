@@ -20,8 +20,8 @@ class Node_tree:
 
 
 class Discusion_tree:
-  def __init__(self, root = None):
-    self.root = root
+  def __init__(self, root_data):
+    self.root = Node_tree(root_data)
     self.current_node = self.root
 
   def next_node(self, direction):
@@ -37,3 +37,13 @@ class Discusion_tree:
 
   def add_message(self, message, direction, old_message):
     self.root.add_message(message, direction, old_message)
+
+  def reset(self):
+    self.current_node = self.root
+
+  # return if current_node is a leaf, with no childs
+  def isAtLeaf(self):
+    if (self.current_node.true_node == None and self.current_node.false_node == None):
+      return True
+    else:
+      return False
