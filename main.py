@@ -107,18 +107,19 @@ Link : """ + ship_tree.get_current()[1] + """
           # go to the True node and let's go for another round
           ship_tree.next_node(True)
           await ship_discussion(ctx)
-          pass
+          return
         case '2️⃣':
           # go to the False node and let's go for another round
           ship_tree.next_node(False)
           await ship_discussion(ctx)
-          pass
+          return
         case '🔄':
           # reset and let's go for another round
           ship_tree.current_node = ship_tree.root
           await ship_discussion(ctx)
-          pass
+          return
         case '❌':
+          await ctx.send("Cancelled")
           pass
           
     # if it's timed out, will go out of discussion
@@ -133,11 +134,21 @@ Link : """ + ship_tree.get_current()[1] + """
   return
 
 
+# search if the arg is a ship we can get in our discussion tree
+@client.command(name="ship_find")
+async def hello(ctx, arg1):
+  append_command(ctx)
+  if (ship_tree.isThereShip(arg1, ship_tree.root)):
+    await ctx.send("This ship can be found")
+  else:
+    await ctx.send("This ship cannot be found")
+
 # send Hi
 @client.command(name="hello")
 async def hello(ctx):
   append_command(ctx)
-  await ctx.send("Hi")
+  await ctx.send(" Hi")
+
 
 
 
