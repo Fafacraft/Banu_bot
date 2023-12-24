@@ -1,4 +1,5 @@
 import asyncio
+import io
 import discord
 import nest_asyncio
 from discord.ext import commands
@@ -6,6 +7,7 @@ from custom_types.hashmap import Hashmap
 from custom_types.chained_list import chained_list
 from custom_types.binary_tree import Discusion_tree
 from utils.make_tree import make_tree
+from utils.image import makeBanuTextImg
 
 nest_asyncio.apply()
 
@@ -15,7 +17,6 @@ intents = discord.Intents.all() # LES DROITS
 client = commands.Bot(command_prefix="$", intents = intents)
 
 # START OF CODE
-
 
 history = Hashmap(1000)
 last_command = " "
@@ -61,7 +62,7 @@ async def history_clear(ctx, arg1):
   history.set(arg1, None)
   append_command(ctx)
 
-
+'''
 # start ship discussion
 @client.command(name="ship")
 async def ship_discussion(ctx):
@@ -132,7 +133,7 @@ Link : """ + ship_tree.get_current()[1] + """
   ship_tree.current_node = ship_tree.root
   append_command(ctx)
   return
-
+'''
 
 # search if the arg is a ship we can get in our discussion tree
 @client.command(name="ship_find")
@@ -148,6 +149,19 @@ async def hello(ctx, arg1):
 async def hello(ctx):
   append_command(ctx)
   await ctx.send(" Hi")
+
+@client.command(name="banu")
+async def toBanu(ctx, arg1):
+  append_command(ctx)
+  img = makeBanuTextImg(arg1)
+  
+  # create buffer
+  buffer = io.BytesIO()
+  # save PNG in buffer
+  img.save(buffer, format="PNG")
+  # move to beginning of buffer so `send()` it will read from beginning
+  buffer.seek(0)
+  await ctx.send(file=discord.File(buffer, 'myimg.png'))
 
 
 
