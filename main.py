@@ -151,9 +151,9 @@ async def hello(ctx):
   await ctx.send(" Hi")
 
 @client.command(name="banu")
-async def toBanu(ctx, arg1):
+async def toBanu(ctx, *, msg: str):
   append_command(ctx)
-  img = makeBanuTextImg(arg1)
+  img = makeBanuTextImg(msg)
   
   # create buffer
   buffer = io.BytesIO()
@@ -161,7 +161,8 @@ async def toBanu(ctx, arg1):
   img.save(buffer, format="PNG")
   # move to beginning of buffer so `send()` it will read from beginning
   buffer.seek(0)
-  await ctx.send(file=discord.File(buffer, 'myimg.png'))
+  await ctx.send("By " + ctx.author.mention, file=discord.File(buffer, 'myimg.png'))
+  await ctx.message.delete()
 
 
 

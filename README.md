@@ -2,6 +2,13 @@
 
 Needs a bot token in token.txt
 
+for the banu font to works, make sure you have a libraqm installed with pillow.
+
+Require :
+- discord
+- nest_asyncio
+- pillow with Raqm (libraqm) (as the Banu is a complex font to show)
+
 # commandes
 $hello : send hi
 
