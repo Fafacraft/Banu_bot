@@ -1,9 +1,11 @@
 import asyncio
 import io
+import json
+import os
 import discord
 import nest_asyncio
 from discord.ext import commands
-from custom_types.hashmap import Hashmap
+from custom_types.hashmap import Hashmap, HashmapJSONEncoder
 from custom_types.chained_list import chained_list
 from custom_types.binary_tree import Discusion_tree
 from utils.make_tree import make_tree
@@ -19,6 +21,25 @@ client = commands.Bot(command_prefix="$", intents = intents)
 # START OF CODE
 
 history = Hashmap(1000)
+
+# so, this. It makes a good json. It reads the json correctly. It works.
+# BUT, somehow, when we restart the bot, he doesn't find the already existing history in the Hashmap. With the same Id. Even if he does find it when we don't restart, of course.
+# I suspect it's the hash function. Maybe the hashing function change each time the code is run, at least part of it, so the same id doesn't give the same hashed input.
+# which would mean it doesn't find the correct row of the Hashmap where the user already exist.
+#
+# Edit : after some research, it is. Which make sense for a hashing function used for security reasons.
+# we can change the env variable, so it's not random anymore, and it will work
+# https://stackoverflow.com/questions/27522626/hash-function-in-python-3-3-returns-different-results-between-sessions
+os.environ["PYTHONHASHSEED"] = "0"
+# welp it still doesn't work :)
+
+with open('histories.json') as file:
+  file_content = file.read()
+  if file_content == "":
+    history = Hashmap(1000)
+  else:
+    history = Hashmap(**json.load(open('histories.json',)))
+    print("Loaded history")
 last_command = " "
 ship_tree = make_tree()
 
@@ -29,10 +50,15 @@ def append_command(ctx):
   key = ctx.author.mention
   user_history = history.get(key)
   last_command = str(ctx.message.created_at) + " : " + ctx.message.content + " by " + ctx.message.author.global_name
+  # this create the user history if he doesn't exist yet
   if user_history == None:
     history.set(key, chained_list())
     user_history = history.get(key)
-  user_history.append(ctx.message)
+  user_history.append({'date' : ctx.message.created_at.isoformat(), 'content' : ctx.message.content, 'author' : ctx.message.author.global_name})  # ctx.message is not serializable :c We need to pick the things we want
+
+  # put all the history in a json for persistant data.
+  with open('histories.json', 'w') as f:
+    json.dump(history, f, cls=HashmapJSONEncoder)
   
 
 # show last command
@@ -53,7 +79,7 @@ async def show_history(ctx, arg1):
     return
   for i in range (user_history.length()):
     msg = user_history.get(i)
-    await ctx.send(str(msg.created_at) + " : " + msg.content + " by " + msg.author.global_name)
+    await ctx.send(str(msg.get("date")) + " : " + msg.get("content") + " by " + msg.get("author"))
 
 # clear history
 @client.command(name="history_clear")
@@ -137,19 +163,14 @@ Link : """ + ship_tree.get_current()[1] + """
 
 # search if the arg is a ship we can get in our discussion tree
 @client.command(name="ship_find")
-async def hello(ctx, arg1):
+async def find_ship(ctx, arg1):
   append_command(ctx)
   if (ship_tree.isThereShip(arg1, ship_tree.root)):
     await ctx.send("This ship can be found")
   else:
     await ctx.send("This ship cannot be found")
 
-# send Hi
-@client.command(name="hello")
-async def hello(ctx):
-  append_command(ctx)
-  await ctx.send(" Hi")
-
+# write ochoas
 @client.command(name="banu")
 async def toBanu(ctx, *, msg: str):
   append_command(ctx)
@@ -166,6 +187,11 @@ async def toBanu(ctx, *, msg: str):
   # so we can't cheat, you need to know how to read banu :)
   await ctx.message.delete()
 
+# send Hi
+@client.command(name="hello")
+async def hello(ctx):
+  append_command(ctx)
+  await ctx.send(" Hi")
 
 
 
@@ -173,10 +199,6 @@ async def toBanu(ctx, *, msg: str):
 async def on_ready():
     print("Le bot est prêt !")
 
-@client.event
-async def on_member_join(member):
-    general_channel = client.get_channel(1044900412551073832)
-    await general_channel.send("Bienvenue sur le serveur ! "+ member.name)
 
 @client.event
 async def on_message(message):

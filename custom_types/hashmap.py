@@ -1,9 +1,12 @@
 # hash map
 # format :  self.buckets[[(key1, a), (key3, c)], [(key2, b)], [], [(key4, d), (key5, e), (key6, f)]]
+from json import JSONEncoder
+
+
 class Hashmap:
-    def __init__(self, size):
+    def __init__(self, size, buckets = []):
         self.size = size
-        self.buckets = []
+        self.buckets = buckets
         for _ in range(size):
             self.buckets.append([])
 
@@ -23,3 +26,8 @@ class Hashmap:
     
     def __str__(self):
         return str(self.buckets)
+    
+
+class HashmapJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        return obj.__dict__

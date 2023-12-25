@@ -1,8 +1,11 @@
 # Liste chaînée
+from json import JSONEncoder
+
+
 class Node:
-  def __init__(self, data):
+  def __init__(self, data, next_node = None):
     self.data = data
-    self.next_node = None
+    self.next_node = next_node
 
 
 class chained_list:
@@ -98,3 +101,7 @@ class chained_list:
     new_node.next_node = current_node.next_node
     current_node.next_node = new_node
 
+
+class Chained_ListJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        return obj.__dict__
