@@ -5,7 +5,7 @@ import os
 import discord
 import nest_asyncio
 from discord.ext import commands
-from custom_types.hashmap import Hashmap, HashmapJSONEncoder
+from custom_types.hashmap import Hashmap
 from custom_types.chained_list import chained_list
 from custom_types.binary_tree import Discusion_tree
 from utils.make_tree import make_tree
@@ -30,9 +30,9 @@ history = Hashmap(1000)
 # Edit : after some research, it is. Which make sense for a hashing function used for security reasons.
 # we can change the env variable, so it's not random anymore, and it will work
 # https://stackoverflow.com/questions/27522626/hash-function-in-python-3-3-returns-different-results-between-sessions
-os.environ["PYTHONHASHSEED"] = "0"
-# welp it still doesn't work :)
-
+#
+# with json, everything is now in hard mode. For exemple, we need to recreate every Node of every message of everyone, as storing the memory addresses don't work when we restart the bot. (For the next nodes of chained list)
+# because well, all memory addresses change when the code is restarted.
 with open('histories.json') as file:
   file_content = file.read()
   if file_content == "":
@@ -50,15 +50,16 @@ def append_command(ctx):
   key = ctx.author.mention
   user_history = history.get(key)
   last_command = str(ctx.message.created_at) + " : " + ctx.message.content + " by " + ctx.message.author.global_name
-  # this create the user history if he doesn't exist yet
+  # this create the user history if he doesn't exist yet. user_history is the chained_list containing all commands of the user.
   if user_history == None:
     history.set(key, chained_list())
     user_history = history.get(key)
+  print("hey")
   user_history.append({'date' : ctx.message.created_at.isoformat(), 'content' : ctx.message.content, 'author' : ctx.message.author.global_name})  # ctx.message is not serializable :c We need to pick the things we want
 
   # put all the history in a json for persistant data.
   with open('histories.json', 'w') as f:
-    json.dump(history, f, cls=HashmapJSONEncoder)
+    json.dump(history, f, default=lambda o: o.__dict__, indent=4)
   
 
 # show last command
