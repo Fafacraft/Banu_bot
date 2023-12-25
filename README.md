@@ -1,8 +1,8 @@
 # Discord_bot
 
-Needs a bot token in token.txt
-
-for the banu font to works, make sure you have a libraqm installed with pillow.
+This is a discord bot in relation to the game world of Star Citizen, specifically, the Banu.
+Talk like a Banu with $banu [message] !
+Alternativly, find your favorite ship with $ship.
 
 Require :
 - a bot token in token.txt
@@ -21,7 +21,7 @@ $ship_find [ship] : search if [ship] is a possible ship from the ship discussion
 ### history
 $history @user : send command history of the user
 $last : send the last command sent
-$history_clear : clear history
+$history_clear @user : clear user history
 
 
 
