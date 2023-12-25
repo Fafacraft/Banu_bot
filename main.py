@@ -62,7 +62,7 @@ async def history_clear(ctx, arg1):
   history.set(arg1, None)
   append_command(ctx)
 
-'''
+
 # start ship discussion
 @client.command(name="ship")
 async def ship_discussion(ctx):
@@ -133,7 +133,7 @@ Link : """ + ship_tree.get_current()[1] + """
   ship_tree.current_node = ship_tree.root
   append_command(ctx)
   return
-'''
+
 
 # search if the arg is a ship we can get in our discussion tree
 @client.command(name="ship_find")
@@ -161,7 +161,9 @@ async def toBanu(ctx, *, msg: str):
   img.save(buffer, format="PNG")
   # move to beginning of buffer so `send()` it will read from beginning
   buffer.seek(0)
-  await ctx.send("By " + ctx.author.mention, file=discord.File(buffer, 'myimg.png'))
+  await ctx.send(ctx.author.mention + " : ", file=discord.File(buffer, 'banu.png'))
+
+  # so we can't cheat, you need to know how to read banu :)
   await ctx.message.delete()
 
 
