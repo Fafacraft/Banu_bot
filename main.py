@@ -22,17 +22,7 @@ client = commands.Bot(command_prefix="$", intents = intents)
 
 history = Hashmap(1000)
 
-# so, this. It makes a good json. It reads the json correctly. It works.
-# BUT, somehow, when we restart the bot, he doesn't find the already existing history in the Hashmap. With the same Id. Even if he does find it when we don't restart, of course.
-# I suspect it's the hash function. Maybe the hashing function change each time the code is run, at least part of it, so the same id doesn't give the same hashed input.
-# which would mean it doesn't find the correct row of the Hashmap where the user already exist.
-#
-# Edit : after some research, it is. Which make sense for a hashing function used for security reasons.
-# we can change the env variable, so it's not random anymore, and it will work
-# https://stackoverflow.com/questions/27522626/hash-function-in-python-3-3-returns-different-results-between-sessions
-os.environ["PYTHONHASHSEED"] = "0"
-# welp it still doesn't work :)
-
+# persistant histories does not work here, but doesn't crash either. On the branch "json", there is more work on it but it still doesn't work, and crash.
 with open('histories.json') as file:
   file_content = file.read()
   if file_content == "":
